@@ -1,0 +1,58 @@
+--- x.c
++++ x.c
+@@ -1763,6 +1795,12 @@ kpress(XEvent *ev)
+ 		return;
+ 
+ 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &ksym, &status);
++	if (IS_SET(MODE_NORMAL)) {
++		kpressNormalMode(buf, strlen(buf),
++				ksym == XK_Escape, ksym == XK_Return, ksym == XK_BackSpace);
++		return;
++	}
++
+ 	/* 1. shortcuts */
+ 	for (bp = shortcuts; bp < shortcuts + LEN(shortcuts); bp++) {
+ 		if (ksym == bp->keysym && match(bp->mod, e->state)) {
+--- x.c
++++ x.c
+@@ -1758,9 +1752,11 @@ kpress(XEvent *ev)
+ 
+ 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &ksym, &status);
+ 	if (IS_SET(MODE_NORMAL)) {
+-		kpressNormalMode(buf, strlen(buf),
+-				ksym == XK_Escape, ksym == XK_Return, ksym == XK_BackSpace);
+-		return;
++		ExitState const es = kpressNormalMode(buf, strlen(buf),
++				match(ControlMask, e->state), ksym == XK_Escape,
++			       	ksym == XK_Return, ksym == XK_BackSpace); 
++		if (es == finished) { normalMode(NULL); } 
++		return; //if (es != failed) { return; }
+ 	}
+ 
+ 	/* 1. shortcuts */
+--- x.c
++++ x.c
+@@ -1759,9 +1759,9 @@ kpress(XEvent *ev)
+ 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &ksym, &status);
+ 	if (IS_SET(MODE_NORMAL)) {
+ 		ExitState const es = kpressNormalMode(buf, strlen(buf),
+-				match(ControlMask, e->state), ksym == XK_Escape,
+-			       	ksym == XK_Return, ksym == XK_BackSpace); 
+-		if (es == finished) { normalMode(NULL); } 
++				match(ControlMask, e->state),
++				&ksym);
++		if (es == finished) { normalMode(NULL); }
+ 		return; //if (es != failed) { return; }
+ 	}
+ 
+--- x.c
++++ x.c
+@@ -1758,7 +1758,7 @@ kpress(XEvent *ev)
+ 
+ 	len = XmbLookupString(xw.xic, e, buf, sizeof buf, &ksym, &status);
+ 	if (IS_SET(MODE_NORMAL)) {
+-		ExitState const es = kpressNormalMode(buf, strlen(buf),
++		ExitState const es = kpressNormalMode(buf, len, // strlen(buf),
+ 				match(ControlMask, e->state),
+ 				&ksym);
+ 		if (es == finished) { normalMode(NULL); }
