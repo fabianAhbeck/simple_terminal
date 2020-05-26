@@ -149,7 +149,7 @@ static unsigned int mousefg = 7;
 static unsigned int mousebg = 0;
 
 /*
-* Xresources preferences to load at startup
+ * Xresources preferences to load at startup
 */
 ResourcePref resources[] = {
 		{ "font",         STRING,  &font },
@@ -219,7 +219,7 @@ static MouseShortcut mshortcuts[] = {
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
 #define AltMask Mod1Mask
-#define TERMMOD (ControlMask|AltMask)
+#define TERMMOD (ShiftMask|AltMask)
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
